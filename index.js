@@ -18,7 +18,7 @@ const PORT=process.env.PORT || 9000
 
 Connection().then(()=>{
   app.listen(PORT,()=>{
-    console.log("SERVER STARTED AT PORT "+PORT);
+    console.log("USER SERVICE STARTED AT PORT "+PORT);
   });
 }).catch((err)=>{
   console.log(err.message);
