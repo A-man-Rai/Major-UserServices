@@ -1,11 +1,10 @@
-import nodemailer from 'nodemailer';
-import Mailgen from 'mailgen';
-import { generateOTP } from '../helper/handleOtp.js';
-import Secret from '../Schema/userSecretSchema.js';
+import nodemailer from "nodemailer";
+import Mailgen from "mailgen";
+import { generateOTP } from "../helper/handleOtp.js";
 import messages from "../helper/message.js";
-
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 const getOtp = async (req, res, type) => {
- 
   let data;
   if (req) {
     data = req.body;
@@ -14,27 +13,31 @@ const getOtp = async (req, res, type) => {
   console.log(data);
 
   const { firstname, surname, email } = data || {};
-  console.log(type);
-  const Message = messages.find(message => message.type === type);
-  console.log(Message);
+
+  const Message = messages.find((message) => message.type === type);
+
   try {
     const otp = generateOTP();
     console.log(otp);
 
-    const result = await Secret.findOneAndUpdate(
-      { email: email },
-      { $set: { otp: otp, otpExpiry: Date.now() + 5 * 60 * 1000 } },
-      { upsert: true, new: true }
-    );
-  
-    if (result) {
-      console.log('User Secret updated successfully');
+    const existingSecret = await prisma.secret.findUnique({ where: { email } });
+    const otpExpiry= Date.now() + 5 * 60 * 1000 +" ";
+    if (existingSecret!==null) {
+      await prisma.secret.update({
+        where: { email },
+        data: { otp, otpExpiry },
+      });
+      console.log("User Secret updated successfully");
     } else {
-      console.log('New User Secret created successfully');
+      
+      await prisma.secret.create({
+        data: { email, otp, otpExpiry},
+      });
+      console.log("New User Secret created successfully");
     }
-    
+
     let transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
         user: "arai99981@gmail.com",
         pass: process.env.APP_PASSWORD,
@@ -48,7 +51,7 @@ const getOtp = async (req, res, type) => {
       theme: "default",
       product: {
         name: "Permit Application",
-        link: 'https://mailgen.js/',
+        link: "https://mailgen.js/",
       },
     });
 
@@ -75,16 +78,14 @@ const getOtp = async (req, res, type) => {
       html: mail,
     };
 
-     const send=await transporter.sendMail(message);
-      if(send){
-         console.log("email send successfully");
-      }
-      else{
-        console.log("error while sending email");
-      }
-
+    const send = await transporter.sendMail(message);
+    if (send) {
+      console.log("email send successfully");
+    } else {
+      console.log("error while sending email");
+    }
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 };
 

@@ -1,26 +1,21 @@
 import express from "express";
-import Connection from "./Database/Connection.js";
-import router from "./Routes/route.js"
-import cors from "cors"
-import bodyParser from "body-parser";
-const app=express();
+import router from "./Routes/mainRouter.js";
+import cors from "cors";
 
-app.use(cors({
-  origin: process.env.CLIENT,
-  credentials: true,
-}));
+const app = express();
+app.use(
+  cors({
+    origin: process.env.CLIENT,
+    credentials: true,
+  })
+);
 
-app.use(bodyParser.json({ limit: '3mb' }));
-app.use(bodyParser.urlencoded({ limit: '3mb', extended: true }));
-app.use("/",router);
+app.use(express.json());
 
-const PORT=process.env.PORT || 9000
+app.use("/", router);
 
-Connection().then(()=>{
-  app.listen(PORT,()=>{
-    console.log("USER SERVICE STARTED AT PORT "+PORT);
-  });
-}).catch((err)=>{
-  console.log(err.message);
-})
+const PORT = process.env.PORT || 9000;
 
+app.listen(PORT, () => {
+  console.log("USER SERVICE STARTED AT PORT " + PORT);
+});
