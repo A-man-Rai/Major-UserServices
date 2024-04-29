@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `user` ADD COLUMN `submitted` INTEGER NOT NULL DEFAULT 0;
