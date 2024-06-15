@@ -9,7 +9,10 @@ const getAllUsersData = async (req, res) => {
       firstName:true,
        surname:true,
        nationality:true,
-      submitted:true} });
+      submitted:true,
+    reject:true,
+    approved:true
+    } });
     res.status(200).json(users);
   } catch (error) {
     console.error("Error retrieving users data:", error);

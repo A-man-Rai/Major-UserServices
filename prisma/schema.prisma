@@ -21,7 +21,8 @@ model User{
   nationality String
   password String
   submitted Int @default(0)
-  role String @default("user")
+  approved Int @default(0)
+  reject Int @default(0)
   pdfs Pdf[]
 }
 

@@ -19,7 +19,7 @@ const getOtp = async (req, res, type) => {
   try {
     const otp = generateOTP();
    // console.log(otp);
-
+console.log(otp);
     const existingSecret = await prisma.secret.findUnique({ where: { email } });
     const otpExpiry= Date.now() + 5 * 60 * 1000 +" ";
     if (existingSecret!==null) {

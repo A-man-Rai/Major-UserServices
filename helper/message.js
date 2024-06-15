@@ -12,7 +12,7 @@ const messages = [
     subject: "RESET ACCOUNT PASSWORD",
     intro: "We received a request to reset your Permit Application password.",
     outro: "",
-  },
+  }
 ];
 
 export default messages;
